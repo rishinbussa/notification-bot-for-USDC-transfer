@@ -1,17 +1,20 @@
 Steps for Task 2:
 1.	Open Remix-Ethereum IDE
+   
 	   •	Under the File Explorer, add the folder which is uploaded in the smartcontract folder of this repository                 (folder name: @openzeppelin).
     
      
 2.	Create a New Contract
-	   •	Create a new contract named MockUSDC under the contracts folder of the Remix file explorer (MockUSDC contract             code is provided in the smartcontract folder of this repo).
+   
+	   •	Create a new contract named MockUSDC under the contracts folder of the Remix file explorer
+  	           (MockUSD contract code is provided in the smartcontract folder of this repo).
   	
-3.	Compile and Deploy the Contract in Remix
+5.	Compile and Deploy the Contract in Remix
 	   •	Note: Choose the environment as Injected Provider-MetaMask & provide the initial supply while deploying for                  the first time.
 	   •	Make sure that you are on the Sepolia test network before confirming the transaction on MetaMask.
 
   	
-4.	Note the Contract Address
+6.	Note the Contract Address
 	   •	Once the contract is deployed, note the contract address.
 
 
