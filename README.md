@@ -123,3 +123,12 @@ Frontend Integration
 
 ![image](https://github.com/user-attachments/assets/e6bd679f-acbd-46ce-82ef-262cc1c2ffa6)
 
+
+
+
+**WORKING SUBGRAPH:**
+
+<img width="1438" alt="image" src="https://github.com/user-attachments/assets/0f87654a-6e2d-48fc-beee-2fcacde891ab">
+
+
+
