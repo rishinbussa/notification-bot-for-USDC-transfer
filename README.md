@@ -1,4 +1,7 @@
-Steps for Task 2:
+Steps for Task 2: 
+   
+   note: for front end download -usdc-transfer-dashboard folder.
+
 1.	Open Remix-Ethereum IDE
    
 	   •	Under the File Explorer, add the folder which is uploaded in the smartcontract folder of this repository                 (folder name: @openzeppelin).
