@@ -1,99 +1,79 @@
-steps for the task 2:
+Steps for Task 2:
+1.	Open Remix-Ethereum IDE
+	   •	Under the File Explorer, add the folder which is uploaded in the smartcontract folder of this repository                 (folder name: @openzeppelin).
+    
+     
+2.	Create a New Contract
+	   •	Create a new contract named MockUSDC under the contracts folder of the Remix file explorer (MockUSDC contract             code is provided in the smartcontract folder of this repo).
+  	
+3.	Compile and Deploy the Contract in Remix
+	   •	Note: Choose the environment as Injected Provider-MetaMask & provide the initial supply while deploying for                  the first time.
+	   •	Make sure that you are on the Sepolia test network before confirming the transaction on MetaMask.
 
-1. open Remix-ethereum IDE --> under the file explorer --> 
-    add the folder which is uploaded in the smartcontact folder of this repository
-                   (folder name: @openzeppelin)
-
-
-2. create a new contract named MockUSDC under the contracts folder of remix file explorer
-      (MockUSDC contract code provided in the smartcontract folder of this repo)
-
-
-3. compile and deploy the contract in remix
-   note: choose the environment as Injected Provider-MetaMask &  provide intial supply while depolying for the first time
-   make sure that you are on the sepolia test network before confirming the transaction on metamask
-
-
-4. once the contract is deployed, note the contract address
+  	
+4.	Note the Contract Address
+	   •	Once the contract is deployed, note the contract address.
 
 
-5. next step is to create and deploy the subgraph
+Next Step: Create and Deploy the Subgraph
+
+5.	Open The Graph Studio
+	•	Go to The Graph Studio and create a new subgraph.
 
 
-6. open https://thegraph.com/studio/ and create a new subgraph
+6.	Deploy the Subgraph Locally through the Terminal
+	•	Follow the documentation provided in the subgraph dashboard.
+
+ Commands to Run on the Terminal:
+
+i) Install Graph CLI using NPM
+npm install -g @graphprotocol/graph-cli
+
+ii) Initialize Subgraph
+graph init --subgraph name--
+  •	After running the above command, we are required to choose the network and other options to set up the graph.
+  •	We are also required to provide the contract address obtained from the contract deployment in step 4.
+
+iii) Authenticate in CLI
+graph auth --deployment key--
+
+iv) Enter Subgraph Directory
+cd --subgraph name--
+
+v) Deploy Subgraph
+graph deploy --subgraph name--
 
 
-7. deploy the newly created subgraph locally through the terminal, by following the documentation provided in the subgraph dashboard
+7.	After Successful Deployment of the Subgraph
+	•	Open the subgraph on The Graph Studio.
+	•	Under My Dashboard, create a new query as per the requirement:
+            query MyQuery {
+              transfers(first: 10, orderBy: blockTimestamp, orderDirection: desc) {
+                from
+                to
+                value
+                blockTimestamp
+              }
+            }
+  	•	Note: The above query is used in my task completion.
 
 
-8. these are the commands to be runned on the terminal:
+8.	Run and Check the Query
+	•	Check if the query fetches and displays the transaction details like from, to, etc.
 
 
-    i)**Install Graph CLI using NPM**
+Frontend Integration
 
-   npm install -g @graphprotocol/graph-cli
-
-    ii)**Initialize Subgraph**
-
-    graph init --subgraph name--
-
-    after running the above command we are required to choose the network and other options to setup the graph
-   here, we are also required to provide the contract address obtained from the contract deployement initially in step 4.
-
-    iii)**Authenticate in CLI**
-
-     graph auth --deployment key--
-
-    iv)**Enter Subgraph**
-
-    cd --subgraph name--
-
-    v)Deploy Subgraph
-
-    graph deploy --subgraph name--
-
-
-9. after successful deployment of the subgraph, open subgraph on thegraph studio.
-
-
-10. under mydashboard, create a new query as per the requirement 
-
- query MyQuery {
-  transfers(first: 10, orderBy: blockTimestamp, orderDirection: desc) {
-    from
-    to
-    value
-    blockTimestamp
-  }
-}
-
-for example, the above query is used in my task completion 
-
-
-11. run and check if the  query fetches and displays the transaction details like to,from etc..
-
-
-12. once we're done with these steps we can integrate this with our frontend project.
-    (all the frontend files are provided in the repository)
-
-
-13. since this is a react project, make sure to have the node modules in the project directory downloaded from this repository
-
-
-14. npm install @apollo/client graphql,
+9.	Integrate with Frontend Project
+	•	Since this is a React project, make sure to have the node modules in the project directory downloaded from this             repository:
+    npm install @apollo/client graphql
     npm install react-toastify
-    these are the other commands to be runned in the project directory to get apollo and toastify to perform our task
+	•	Apollo is used to fetch the data from subgraph to our frontend page, and Toastify is used for the notifications.
 
 
-15. apollo is used to fetch the data to our frontend page and toastify is used for the **notifications**.
-
-
-16. after these steps we can see the latest 10 transactions on our frontend page, all the new transactions executed on remix are always
-      fetched for every 5 seconds and later displayed and notified on our page.
-
-
-
-
+10.	Display Latest Transactions on the Frontend
+	•	After these steps, we will be able to see the latest 10 transactions on our frontend page.
+	•	All the new transactions executed on Remix are always fetched every 5 seconds and later displayed and notified on         the page.
 
 
 
