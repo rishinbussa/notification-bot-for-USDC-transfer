@@ -6,7 +6,7 @@ steps for the task 2:
 
 
 2. create a new contract named MockUSDC under the contracts folder of remix file explorer
-      (MockUSDC contract code provided in the smartcontact folder of this repo)
+      (MockUSDC contract code provided in the smartcontract folder of this repo)
 
 
 3. compile and deploy the contract in remix
