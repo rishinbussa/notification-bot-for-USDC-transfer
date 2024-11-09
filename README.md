@@ -94,4 +94,29 @@ for example, the above query is used in my task completion
 
 
 
-   
+
+
+
+
+
+
+
+
+
+
+
+
+**RESULTS:**
+
+   ![image](https://github.com/user-attachments/assets/5e71c924-c1dd-44ed-8d15-ec50b6bddc66)
+
+
+
+
+   ![image](https://github.com/user-attachments/assets/df486dac-2e4a-4639-8980-b1d8105ad34f)
+
+
+
+
+![image](https://github.com/user-attachments/assets/e6bd679f-acbd-46ce-82ef-262cc1c2ffa6)
+
