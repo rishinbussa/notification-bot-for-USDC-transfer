@@ -1,0 +1,93 @@
+
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #4facfe, #000f10);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden; 
+}
+
+
+.App {
+  text-align: center;
+  padding: 80px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  max-width: 600px;
+  width: 100%;
+  backdrop-filter: blur(10px);
+}
+
+
+.App-header {
+  background: linear-gradient(45deg, #ff7e5f, #feb47b);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.App-header h1 {
+  color: #fff;
+  font-size: 2rem;
+  margin: 0;
+}
+
+
+.App-content {
+  padding: 15px;
+  overflow-y: auto; 
+  max-height: 400px; 
+}
+
+/* List styling */
+ul {
+  padding: 0;
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; 
+  max-height: 100%; 
+}
+
+
+li {
+  background: #b6b6b6;
+  color: #333;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  height: 120px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden; 
+}
+
+
+li:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+.Toastify__toast-container {
+  z-index: 9999 !important; 
+}
+
+.Toastify__toast {
+  background: #333;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.Toastify__toast--info {
+  background-color: #0072ff;
+}
