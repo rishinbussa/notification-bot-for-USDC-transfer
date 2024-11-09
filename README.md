@@ -35,22 +35,22 @@ steps for the task 2:
 
     ii)**Initialize Subgraph**
 
-    graph init <subgraph name>
+    graph init --subgraph name--
 
     after running the above command we are required to choose the network and other options to setup the graph
    here, we are also required to provide the contract address obtained from the contract deployement initially in step 4.
 
     iii)**Authenticate in CLI**
 
-     graph auth <deployment key>
+     graph auth --deployment key--
 
     iv)**Enter Subgraph**
 
-    cd <subgraph name>
+    cd --subgraph name--
 
     v)Deploy Subgraph
 
-    graph deploy <subgraph name>
+    graph deploy --subgraph name--
 
 
 9. after successful deployment of the subgraph, open subgraph on thegraph studio.
