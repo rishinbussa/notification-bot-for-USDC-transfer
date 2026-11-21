@@ -1,137 +1,103 @@
-Steps for Task 2: 
-   
-   note: for front end download -usdc-transfer-dashboard folder.
+# USDC Transfer Dashboard
 
-1.	Open Remix-Ethereum IDE
-   
-	   •	Under the File Explorer, add the folder which is uploaded in the smartcontract folder of this repository                 (folder name: @openzeppelin).
-    
-     
-2.	Create a New Contract
-   
-	   •	Create a new contract named MockUSDC under the contracts folder of the Remix file explorer
-  	           (MockUSD contract code is provided in the smartcontract folder of this repo).
-  	
-3.	Compile and Deploy the Contract in Remix
+A React dashboard that lists the 10 most recent transfers of a mock USDC token on the Ethereum Sepolia testnet and shows an in-page notification when a new transfer appears. The token is a minimal ERC-20 contract built on OpenZeppelin and deployed from Remix with MetaMask. A subgraph on The Graph indexes the token's `Transfer` events, and the dashboard polls the subgraph's GraphQL endpoint every 5 seconds through Apollo Client. The dashboard never talks to the chain or a wallet directly; it only reads from the subgraph.
 
-  	 •	Note: Choose the environment as Injected Provider-MetaMask & provide the initial supply while
-  	         deploying for the first time.
+## How it works
 
-  	 •	Make sure that you are on the Sepolia test network before confirming the transaction on MetaMask.
+```
+MockUSDC (Sepolia) -> subgraph (Subgraph Studio) -> React dashboard -> toast notification
+emits Transfer        stores Transfer entities      polls every 5 s     one per new transfer
+```
 
-  	
-4.	Note the Contract Address
-   
-	   •	Once the contract is deployed, note the contract address.
+1. **Contract.** `smartcontact/MockUSDC.sol` extends OpenZeppelin's `ERC20` with the name "Mock USD Coin" and symbol `USDC`. The constructor mints `initialSupply * 10**18` base units to the deployer, because the token keeps OpenZeppelin's default of 18 decimals. Every transfer, including the initial mint, emits the standard `Transfer(from, to, value)` event.
+2. **Subgraph.** The subgraph was generated with `graph init` from the deployed contract's address and ABI. The generated code stores each `Transfer` event as a `Transfer` entity with `from`, `to`, `value`, `blockNumber`, `blockTimestamp` and `transactionHash`. It is deployed to Subgraph Studio. The subgraph project is not in this repository; the dashboard only references its query URL.
+3. **Dashboard.** `src/ApolloClient.js` creates an Apollo Client for the Studio query URL. `src/TransferList.js` runs the query below and calls `refetch()` every 5 seconds.
 
+   ```graphql
+   query GetTransfers {
+     transfers(first: 10, orderBy: blockTimestamp, orderDirection: desc) {
+       from
+       to
+       value
+       blockTimestamp
+     }
+   }
+   ```
 
-Next Step: Create and Deploy the Subgraph
+4. **Notification.** The component remembers the newest `blockTimestamp` it has seen. When a refetch returns transfers newer than that, it shows one react-toastify toast per new transfer and re-renders the list with sender, recipient, amount and local time.
 
-5.	Open The Graph Studio
-   
-	•	Go to The Graph Studio and create a new subgraph.
+Results from a test run:
 
+![Test run screenshot 1](https://github.com/user-attachments/assets/5e71c924-c1dd-44ed-8d15-ec50b6bddc66)
 
-6.	Deploy the Subgraph Locally through the Terminal
-   
-	•	Follow the documentation provided in the subgraph dashboard.
+![Test run screenshot 2](https://github.com/user-attachments/assets/df486dac-2e4a-4639-8980-b1d8105ad34f)
 
- Commands to Run on the Terminal:
+![Test run screenshot 3](https://github.com/user-attachments/assets/e6bd679f-acbd-46ce-82ef-262cc1c2ffa6)
 
-i) Install Graph CLI using NPM
+The deployed subgraph in Subgraph Studio:
+
+<img width="1438" alt="Subgraph in Subgraph Studio" src="https://github.com/user-attachments/assets/0f87654a-6e2d-48fc-beee-2fcacde891ab">
+
+## Tech stack
+
+Solidity 0.8 with OpenZeppelin Contracts 5, Remix and MetaMask on Sepolia, The Graph (Graph CLI, Subgraph Studio), React 18 (Create React App), Apollo Client 3 and GraphQL, react-toastify.
+
+## Run it locally
+
+You need Node.js and npm, MetaMask with some Sepolia ETH, and a Subgraph Studio account.
+
+### 1. Deploy the token
+
+1. Open [Remix](https://remix.ethereum.org) and create `MockUSDC.sol` with the contents of `smartcontact/MockUSDC.sol`. Remix downloads `@openzeppelin/contracts` from npm to resolve the import.
+2. Compile with Solidity 0.8.20 or newer, which OpenZeppelin 5 requires (the original build used 0.8.26).
+3. In Deploy & Run, choose **Injected Provider - MetaMask**, switch MetaMask to Sepolia, enter `initialSupply` in whole tokens and deploy.
+4. Note the contract address and the block it was deployed in.
+
+### 2. Create and deploy the subgraph
+
+Create a subgraph in [Subgraph Studio](https://thegraph.com/studio/), then run:
+
+```bash
 npm install -g @graphprotocol/graph-cli
+graph init <subgraph-slug>    # pick Ethereum Sepolia, then enter the contract address and start block
+graph auth <deploy-key>       # deploy key from the subgraph's Studio page
+cd <subgraph-slug>
+graph codegen && graph build
+graph deploy <subgraph-slug>
+```
 
-ii) Initialize Subgraph
-graph init --subgraph name--
+If the contract is not verified on Etherscan, `graph init` asks for an ABI file; save the ABI from Remix's Solidity Compiler tab as a JSON file and give its path. Keep the option to index contract events as entities, because the dashboard queries the generated `Transfer` entity. You can test the query above in the Studio playground once the subgraph has synced.
 
-  •	After running the above command, we are required to choose the network and other options to set up the graph.
-  
-  •	We are also required to provide the contract address obtained from the contract deployment in step 4.
+### 3. Run the dashboard
 
-iii) Authenticate in CLI
-graph auth --deployment key--
+Set `uri` in `usdc-transfer-dashboard/src/ApolloClient.js` to your subgraph's query URL from Studio (it has the form `https://api.studio.thegraph.com/query/<id>/<subgraph-slug>/<version>`), then:
 
-iv) Enter Subgraph Directory
-cd --subgraph name--
+```bash
+cd usdc-transfer-dashboard
+npm install
+npm start
+```
 
-v) Deploy Subgraph
-graph deploy --subgraph name--
+The app opens at http://localhost:3000. Call `transfer` on the token from Remix and a toast appears on the next poll after the subgraph indexes that block. `npm run build` writes a production build to `build/`.
 
+## Project structure
 
-7.	After Successful Deployment of the Subgraph
-   
-	•	Open the subgraph on The Graph Studio.
+```
+smartcontact/
+  MockUSDC.sol                  ERC-20 token contract
+usdc-transfer-dashboard/        Create React App project
+  src/ApolloClient.js           Apollo Client pointed at the subgraph query URL
+  src/TransferList.js           GraphQL query, 5-second polling, toasts, transfer list
+  src/App.js                    page layout and ApolloProvider
+  OneSignalSDK-v16-ServiceWorker/
+    OneSignalSDKWorker.js       OneSignal web push service worker (not wired up)
+  public/                       static files served by Create React App
+```
 
-	•	Under My Dashboard, create a new query as per the requirement:
-            query MyQuery {
-              transfers(first: 10, orderBy: blockTimestamp, orderDirection: desc) {
-                from
-                to
-                value
-                blockTimestamp
-              }
-            }
-  	
-  	•	Note: The above query is used in my task completion.
+## Limitations and next steps
 
-
-8.	Run and Check the Query
-   
-	•	Check if the query fetches and displays the transaction details like from, to, etc.
-
-
-Frontend Integration
-
-9.	Integrate with Frontend Project
-    
-	•	Since this is a React project, make sure to have the node modules in the project directory downloaded
-                from this repository:
-                   npm install @apollo/client graphql
-                   npm install react-toastify
-  	           and also install other required packages as per your device.
-  	
-	•	Apollo is used to fetch the data from subgraph to our frontend page, and Toastify is used for
-                the notifications.
-
-
-10.	Display Latest Transactions on the Frontend
-	
-	•	After these steps, we will be able to see the latest 10 transactions on our frontend page.
-
-	•	All the new transactions executed on Remix are always fetched every 5 seconds and later displayed
-                and notified on the page.
-
-
-
-
-
-
-
-
-
-
-
-
-**RESULTS:**
-
-   ![image](https://github.com/user-attachments/assets/5e71c924-c1dd-44ed-8d15-ec50b6bddc66)
-
-
-
-
-   ![image](https://github.com/user-attachments/assets/df486dac-2e4a-4639-8980-b1d8105ad34f)
-
-
-
-
-![image](https://github.com/user-attachments/assets/e6bd679f-acbd-46ce-82ef-262cc1c2ffa6)
-
-
-
-
-**WORKING SUBGRAPH:**
-
-<img width="1438" alt="image" src="https://github.com/user-attachments/assets/0f87654a-6e2d-48fc-beee-2fcacde891ab">
-
-
-
+- Notifications are in-page toasts, so they only appear while the dashboard is open. The OneSignal service worker file is included, but the OneSignal SDK is never initialized and the worker sits outside `public/`, so browser push notifications are not active. The `firebase` dependency is installed but not used.
+- Amounts are divided by 10^6, the decimals of real USDC, but MockUSDC uses 18 decimals, so displayed amounts are 10^12 times too large. Overriding `decimals()` in the contract or changing the divisor would align them.
+- On first load all 10 returned transfers count as new, so the page shows 10 toasts at once.
+- The subgraph query URL is hard-coded in `src/ApolloClient.js`, and the subgraph's schema, manifest and mappings are not in the repository.
+- There are no real tests; `src/App.test.js` is the Create React App placeholder test and fails against this UI.
