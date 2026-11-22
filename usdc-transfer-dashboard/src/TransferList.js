@@ -6,7 +6,7 @@ import { formatAmount } from './formatAmount';
 import { findNewTransfers, getLatestTimestamp } from './newTransfers';
 
 
-const GET_TRANSFERS = gql`
+export const GET_TRANSFERS = gql`
   query GetTransfers {
     transfers(first: 10, orderBy: blockTimestamp, orderDirection: desc) {
       from

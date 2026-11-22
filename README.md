@@ -42,7 +42,7 @@ The deployed subgraph in Subgraph Studio:
 
 ## Tech stack
 
-Solidity 0.8 with OpenZeppelin Contracts 5, Remix and MetaMask on Sepolia, The Graph (Graph CLI, Subgraph Studio), React 18 (Create React App), Apollo Client 3 and GraphQL, react-toastify.
+Solidity 0.8 with OpenZeppelin Contracts 5, Remix and MetaMask on Sepolia, The Graph (Graph CLI, Subgraph Studio), React 18 (Create React App), Apollo Client 3 and GraphQL, react-toastify, Jest and React Testing Library.
 
 ## Run it locally
 
@@ -82,6 +82,16 @@ npm start
 
 The app opens at http://localhost:3000. Call `transfer` on the token from Remix and a toast appears on the next poll after the subgraph indexes that block. `npm run build` writes a production build to `build/`.
 
+## Run the tests
+
+```bash
+cd usdc-transfer-dashboard
+npm install
+npm test -- --watchAll=false
+```
+
+The tests cover the amount formatting, the new-transfer detection and the transfer list rendered with a mocked Apollo provider, so they run without the subgraph or a wallet.
+
 ## Project structure
 
 ```
@@ -93,6 +103,7 @@ usdc-transfer-dashboard/        Create React App project
   src/formatAmount.js           base units to token amount (18 decimals, BigInt)
   src/newTransfers.js           finds the transfers that arrived since the last poll
   src/App.js                    page layout and ApolloProvider
+  src/*.test.js                 Jest tests for the helpers and the transfer list
   OneSignalSDK-v16-ServiceWorker/
     OneSignalSDKWorker.js       OneSignal web push service worker (not wired up)
   public/                       static files served by Create React App
@@ -104,4 +115,3 @@ usdc-transfer-dashboard/        Create React App project
 - The token's 18 decimals are a constant, `TOKEN_DECIMALS` in `src/formatAmount.js`, not read from the contract. If the contract overrides `decimals()`, that constant has to change with it.
 - The query fetches only the 10 newest transfers, so if more than 10 arrive between two polls, the older ones get no toast.
 - The subgraph query URL is hard-coded in `src/ApolloClient.js`, and the subgraph's schema, manifest and mappings are not in the repository.
-- There are no real tests; `src/App.test.js` is the Create React App placeholder test and fails against this UI.
