@@ -26,7 +26,7 @@ emits Transfer        stores Transfer entities      polls every 5 s     one per 
 
    The subgraph returns each `value` as a string of base units. `src/formatAmount.js` turns it into a token amount with BigInt and the token's 18 decimals, so no digits are lost to rounding: `1234500000000000000000` is shown as `1,234.5`.
 
-4. **Notification.** The component remembers the newest `blockTimestamp` it has seen. When a refetch returns transfers newer than that, it shows one react-toastify toast per new transfer and re-renders the list with sender, recipient, amount and local time.
+4. **Notification.** The component remembers the newest `blockTimestamp` it has seen. The first successful load only sets this baseline, so the transfers that were already there do not trigger toasts. When a later refetch returns transfers newer than the baseline, it shows one react-toastify toast per new transfer and moves the baseline forward. The comparison is done by two pure functions in `src/newTransfers.js`. The list always shows the latest query result with sender, recipient, amount and local time.
 
 Results from a test run, recorded before amounts were shown with the token's 18 decimals:
 
@@ -91,6 +91,7 @@ usdc-transfer-dashboard/        Create React App project
   src/ApolloClient.js           Apollo Client pointed at the subgraph query URL
   src/TransferList.js           GraphQL query, 5-second polling, toasts, transfer list
   src/formatAmount.js           base units to token amount (18 decimals, BigInt)
+  src/newTransfers.js           finds the transfers that arrived since the last poll
   src/App.js                    page layout and ApolloProvider
   OneSignalSDK-v16-ServiceWorker/
     OneSignalSDKWorker.js       OneSignal web push service worker (not wired up)
@@ -101,6 +102,6 @@ usdc-transfer-dashboard/        Create React App project
 
 - Notifications are in-page toasts, so they only appear while the dashboard is open. The OneSignal service worker file is included, but the OneSignal SDK is never initialized and the worker sits outside `public/`, so browser push notifications are not active. The `firebase` dependency is installed but not used.
 - The token's 18 decimals are a constant, `TOKEN_DECIMALS` in `src/formatAmount.js`, not read from the contract. If the contract overrides `decimals()`, that constant has to change with it.
-- On first load all 10 returned transfers count as new, so the page shows 10 toasts at once.
+- The query fetches only the 10 newest transfers, so if more than 10 arrive between two polls, the older ones get no toast.
 - The subgraph query URL is hard-coded in `src/ApolloClient.js`, and the subgraph's schema, manifest and mappings are not in the repository.
 - There are no real tests; `src/App.test.js` is the Create React App placeholder test and fails against this UI.

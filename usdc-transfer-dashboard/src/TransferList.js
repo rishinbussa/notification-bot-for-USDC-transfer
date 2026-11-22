@@ -3,6 +3,7 @@ import { useQuery, gql } from '@apollo/client';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { formatAmount } from './formatAmount';
+import { findNewTransfers, getLatestTimestamp } from './newTransfers';
 
 
 const GET_TRANSFERS = gql`
@@ -18,28 +19,18 @@ const GET_TRANSFERS = gql`
 
 const TransferList = () => {
   const { loading, error, data, refetch } = useQuery(GET_TRANSFERS);
-  const [transfers, setTransfers] = useState([]);
-  const [latestTimestamp, setLatestTimestamp] = useState(0);
+  // Newest blockTimestamp seen so far; null until the first load sets it.
+  const [latestTimestamp, setLatestTimestamp] = useState(null);
 
   useEffect(() => {
     if (data) {
-      const newTransfers = data.transfers;
+      const newItems = findNewTransfers(data.transfers, latestTimestamp);
 
-      
-      const newItems = newTransfers.filter(
-        transfer => parseInt(transfer.blockTimestamp) > latestTimestamp
-      );
+      newItems.forEach(transfer => {
+        toast.info(`New transfer: ${formatAmount(transfer.value)} USDC from ${transfer.from}`);
+      });
 
-      
-      if (newItems.length > 0) {
-        newItems.forEach(transfer => {
-          toast.info(`New transfer: ${formatAmount(transfer.value)} USDC from ${transfer.from}`);
-        });
-
-        
-        setLatestTimestamp(Math.max(...newItems.map(item => parseInt(item.blockTimestamp))));
-        setTransfers(newTransfers);
-      }
+      setLatestTimestamp(getLatestTimestamp(data.transfers, latestTimestamp));
     }
   }, [data, latestTimestamp]);
 
@@ -69,7 +60,7 @@ const TransferList = () => {
       
       <h2>Latest 10 USDC Transfers</h2>
       <ul>
-        {transfers.map((transfer, index) => (
+        {data.transfers.map((transfer, index) => (
           <li key={index}>
             <strong>From:</strong> {transfer.from} <br />
             <strong>To:</strong> {transfer.to} <br />
