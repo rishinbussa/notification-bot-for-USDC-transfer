@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { formatAmount } from './formatAmount';
 
 
 const GET_TRANSFERS = gql`
@@ -32,7 +33,7 @@ const TransferList = () => {
       
       if (newItems.length > 0) {
         newItems.forEach(transfer => {
-          toast.info(`New transfer: ${parseInt(transfer.value) / 10**6} USDC from ${transfer.from}`);
+          toast.info(`New transfer: ${formatAmount(transfer.value)} USDC from ${transfer.from}`);
         });
 
         
@@ -72,7 +73,7 @@ const TransferList = () => {
           <li key={index}>
             <strong>From:</strong> {transfer.from} <br />
             <strong>To:</strong> {transfer.to} <br />
-            <strong>Amount:</strong> {parseInt(transfer.value) / 10**6} USDC <br />
+            <strong>Amount:</strong> {formatAmount(transfer.value)} USDC <br />
             <strong>Timestamp:</strong> {new Date(parseInt(transfer.blockTimestamp) * 1000).toLocaleString()}
           </li>
         ))}

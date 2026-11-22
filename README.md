@@ -24,9 +24,11 @@ emits Transfer        stores Transfer entities      polls every 5 s     one per 
    }
    ```
 
+   The subgraph returns each `value` as a string of base units. `src/formatAmount.js` turns it into a token amount with BigInt and the token's 18 decimals, so no digits are lost to rounding: `1234500000000000000000` is shown as `1,234.5`.
+
 4. **Notification.** The component remembers the newest `blockTimestamp` it has seen. When a refetch returns transfers newer than that, it shows one react-toastify toast per new transfer and re-renders the list with sender, recipient, amount and local time.
 
-Results from a test run:
+Results from a test run, recorded before amounts were shown with the token's 18 decimals:
 
 ![Test run screenshot 1](https://github.com/user-attachments/assets/5e71c924-c1dd-44ed-8d15-ec50b6bddc66)
 
@@ -88,6 +90,7 @@ smartcontact/
 usdc-transfer-dashboard/        Create React App project
   src/ApolloClient.js           Apollo Client pointed at the subgraph query URL
   src/TransferList.js           GraphQL query, 5-second polling, toasts, transfer list
+  src/formatAmount.js           base units to token amount (18 decimals, BigInt)
   src/App.js                    page layout and ApolloProvider
   OneSignalSDK-v16-ServiceWorker/
     OneSignalSDKWorker.js       OneSignal web push service worker (not wired up)
@@ -97,7 +100,7 @@ usdc-transfer-dashboard/        Create React App project
 ## Limitations and next steps
 
 - Notifications are in-page toasts, so they only appear while the dashboard is open. The OneSignal service worker file is included, but the OneSignal SDK is never initialized and the worker sits outside `public/`, so browser push notifications are not active. The `firebase` dependency is installed but not used.
-- Amounts are divided by 10^6, the decimals of real USDC, but MockUSDC uses 18 decimals, so displayed amounts are 10^12 times too large. Overriding `decimals()` in the contract or changing the divisor would align them.
+- The token's 18 decimals are a constant, `TOKEN_DECIMALS` in `src/formatAmount.js`, not read from the contract. If the contract overrides `decimals()`, that constant has to change with it.
 - On first load all 10 returned transfers count as new, so the page shows 10 toasts at once.
 - The subgraph query URL is hard-coded in `src/ApolloClient.js`, and the subgraph's schema, manifest and mappings are not in the repository.
 - There are no real tests; `src/App.test.js` is the Create React App placeholder test and fails against this UI.
