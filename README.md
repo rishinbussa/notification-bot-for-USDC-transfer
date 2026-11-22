@@ -90,11 +90,12 @@ npm install
 npm test -- --watchAll=false
 ```
 
-The tests cover the amount formatting, the new-transfer detection and the transfer list rendered with a mocked Apollo provider, so they run without the subgraph or a wallet.
+The tests cover the amount formatting, the new-transfer detection and the transfer list rendered with a mocked Apollo provider, so they run without the subgraph or a wallet. GitHub Actions (`.github/workflows/ci.yml`) runs `npm ci`, the tests and `npm run build` on Node 22 for every push to `main` and every pull request.
 
 ## Project structure
 
 ```
+.github/workflows/ci.yml        GitHub Actions: install, test and build on Node 22
 smartcontact/
   MockUSDC.sol                  ERC-20 token contract
 usdc-transfer-dashboard/        Create React App project
