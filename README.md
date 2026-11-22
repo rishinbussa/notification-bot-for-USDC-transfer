@@ -104,14 +104,12 @@ usdc-transfer-dashboard/        Create React App project
   src/newTransfers.js           finds the transfers that arrived since the last poll
   src/App.js                    page layout and ApolloProvider
   src/*.test.js                 Jest tests for the helpers and the transfer list
-  OneSignalSDK-v16-ServiceWorker/
-    OneSignalSDKWorker.js       OneSignal web push service worker (not wired up)
   public/                       static files served by Create React App
 ```
 
 ## Limitations and next steps
 
-- Notifications are in-page toasts, so they only appear while the dashboard is open. The OneSignal service worker file is included, but the OneSignal SDK is never initialized and the worker sits outside `public/`, so browser push notifications are not active. The `firebase` dependency is installed but not used.
+- Notifications are in-page toasts, so they only appear while the dashboard is open. Browser push notifications are not active; adding them would need a service worker and a push service such as OneSignal or Firebase Cloud Messaging.
 - The token's 18 decimals are a constant, `TOKEN_DECIMALS` in `src/formatAmount.js`, not read from the contract. If the contract overrides `decimals()`, that constant has to change with it.
 - The query fetches only the 10 newest transfers, so if more than 10 arrive between two polls, the older ones get no toast.
 - The subgraph query URL is hard-coded in `src/ApolloClient.js`, and the subgraph's schema, manifest and mappings are not in the repository.
